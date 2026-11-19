@@ -1,0 +1,6 @@
+# Solo se publica el generador; el resto de la carpeta es material de trabajo
+/*
+!/.gitignore
+!/README.md
+!/index.html
+!/generador-firma.html

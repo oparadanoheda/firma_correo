@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Generador de firmas</title>
+</head>
+<body>
+
+<!-- ============ INICIO GENERADOR DE FIRMAS (se puede pegar en un bloque "HTML personalizado" de WordPress) ============ -->
+<div id="firma-seneca">
+<style>
+  #firma-seneca {
+    --fs-verde: #2e7d32;
+    --fs-verde-osc: #1b5e20;
+    --fs-borde: #d0d7de;
+    --fs-fondo: #f6f8fa;
+    font-family: "Segoe UI", Roboto, Arial, sans-serif;
+    color: #1f2328;
+    max-width: 760px;
+    margin: 24px auto;
+    padding: 0 16px;
+    box-sizing: border-box;
+  }
+  #firma-seneca * { box-sizing: border-box; }
+  #firma-seneca h2 { color: var(--fs-verde-osc); margin: 0 0 4px; font-size: 1.5em; }
+  #firma-seneca .fs-sub { margin: 0 0 20px; color: #57606a; }
+  #firma-seneca .fs-card {
+    background: #fff; border: 1px solid var(--fs-borde); border-radius: 10px;
+    padding: 20px; margin-bottom: 20px;
+  }
+  #firma-seneca .fs-card h3 { margin: 0 0 14px; font-size: 1.1em; }
+  #firma-seneca label { display: block; font-weight: 600; margin: 12px 0 4px; font-size: .95em; }
+  #firma-seneca label .fs-opt { font-weight: 400; color: #57606a; }
+  #firma-seneca input[type=text], #firma-seneca input[type=email] {
+    width: 100%; padding: 10px 12px; border: 1px solid var(--fs-borde); border-radius: 6px;
+    font-size: 1em; font-family: inherit;
+  }
+  #firma-seneca input:focus { outline: 2px solid var(--fs-verde); border-color: var(--fs-verde); }
+  #firma-seneca input.fs-error { border-color: #cf222e; }
+  #firma-seneca .fs-msg-error { color: #cf222e; font-size: .85em; min-height: 1.2em; margin-top: 4px; }
+  #firma-seneca .fs-preview {
+    border: 1px dashed var(--fs-borde); border-radius: 6px; padding: 16px;
+    background: #fff; overflow-x: auto;
+  }
+  #firma-seneca .fs-botones { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 14px; }
+  #firma-seneca button {
+    background: var(--fs-verde); color: #fff; border: 0; border-radius: 6px;
+    padding: 10px 16px; font-size: .95em; font-family: inherit; cursor: pointer;
+  }
+  #firma-seneca button:hover { background: var(--fs-verde-osc); }
+  #firma-seneca button.fs-sec { background: #fff; color: var(--fs-verde-osc); border: 1px solid var(--fs-verde); }
+  #firma-seneca button.fs-sec:hover { background: var(--fs-fondo); }
+  #firma-seneca button:disabled { opacity: .5; cursor: not-allowed; }
+  #firma-seneca textarea {
+    width: 100%; height: 180px; margin-top: 12px; font-family: Consolas, monospace; font-size: .8em;
+    border: 1px solid var(--fs-borde); border-radius: 6px; padding: 10px; background: var(--fs-fondo);
+    resize: vertical;
+  }
+  #firma-seneca .fs-aviso { font-size: .9em; color: var(--fs-verde-osc); min-height: 1.3em; margin-top: 8px; }
+  #firma-seneca .fs-intro { margin: 0 0 16px; }
+  #firma-seneca .fs-nota { color: #57606a; font-size: .9em; }
+  #firma-seneca ol.fs-pasos { list-style: none; counter-reset: paso; padding: 0; margin: 0; }
+  #firma-seneca ol.fs-pasos > li {
+    counter-increment: paso; position: relative;
+    display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: 12px 20px;
+    padding: 14px 0 14px 48px; border-bottom: 1px solid #eaeef2; line-height: 1.5;
+  }
+  #firma-seneca ol.fs-pasos > li:last-child { border-bottom: 0; }
+  #firma-seneca ol.fs-pasos > li::before {
+    content: counter(paso); position: absolute; left: 0; top: 14px;
+    width: 32px; height: 32px; border-radius: 50%; background: var(--fs-verde); color: #fff;
+    font-weight: 700; display: flex; align-items: center; justify-content: center;
+  }
+  #firma-seneca ol.fs-pasos > li:last-child::before { content: "✓"; }
+  #firma-seneca .fs-txt { flex: 1 1 260px; padding-top: 4px; }
+  #firma-seneca .fs-txt ol { margin: 6px 0 0; padding-left: 20px; }
+  #firma-seneca .fs-txt ol li { margin: 4px 0; }
+  #firma-seneca ol.fs-pasos img {
+    flex: 0 0 auto; max-width: 100%; height: auto;
+    border: 1px solid var(--fs-borde); border-radius: 6px; background: #fff;
+    box-shadow: 0 2px 6px rgba(0,0,0,.08);
+  }
+  #firma-seneca ol.fs-pasos img.fs-grande { width: 300px; }
+  #firma-seneca button.fs-mini { padding: 6px 12px; margin: 6px 8px 2px 0; font-size: .9em; }
+  #firma-seneca .fs-aviso-linea { display: inline; margin: 0; }
+  #firma-seneca .fs-planb { margin-top: 18px; border: 1px solid var(--fs-borde); border-radius: 8px; background: var(--fs-fondo); }
+  #firma-seneca .fs-planb summary { cursor: pointer; padding: 12px 16px; font-weight: 600; color: #57606a; }
+  #firma-seneca .fs-planb[open] summary { border-bottom: 1px solid var(--fs-borde); }
+  #firma-seneca .fs-planb > .fs-intro, #firma-seneca .fs-planb > ol, #firma-seneca .fs-planb > textarea { margin-left: 16px; margin-right: 16px; width: auto; }
+  #firma-seneca .fs-planb > .fs-intro { margin-top: 14px; }
+  #firma-seneca .fs-planb > textarea { display: block; margin-bottom: 16px; height: 120px; }
+  #firma-seneca ol.fs-pasos-b { counter-reset: paso 4; }
+  #firma-seneca ol.fs-pasos-b > li::before { background: #57606a; }
+  #firma-seneca ol.fs-pasos-b > li:last-child::before { background: var(--fs-verde); }
+  #firma-seneca .fs-vacio { color: #8c959f; font-style: italic; }
+</style>
+
+  <h2>Generador de firmas de correo</h2>
+  <p class="fs-sub">CEIPSO Filósofo Séneca · Rellena tus datos, copia la firma y pégala en tu correo.</p>
+
+  <div class="fs-card">
+    <h3>1. Tus datos</h3>
+    <label for="fs-nombre">Nombre y apellidos</label>
+    <input type="text" id="fs-nombre" placeholder="Ej.: María García López" autocomplete="name">
+
+    <label for="fs-cargo">Cargo <span class="fs-opt">(opcional)</span></label>
+    <input type="text" id="fs-cargo" placeholder="Ej.: Secretario, Tutora de 3.º A, Jefe de Estudios…">
+
+    <label for="fs-email">Correo electrónico</label>
+    <input type="email" id="fs-email" placeholder="nombre.apellido@educa.madrid.org" autocomplete="email">
+    <div class="fs-msg-error" id="fs-email-error"></div>
+  </div>
+
+  <div class="fs-card">
+    <h3>2. Vista previa</h3>
+    <div class="fs-preview" id="fs-preview"></div>
+    <div class="fs-botones">
+      <button type="button" id="fs-copiar-firma">Copiar firma</button>
+    </div>
+    <div class="fs-aviso" id="fs-aviso" role="status"></div>
+  </div>
+
+  <div class="fs-card">
+    <h3>3. Cómo ponerla en tu correo de EducaMadrid</h3>
+    <p class="fs-intro">Deja esta página abierta y, en otra pestaña, entra en tu correo de EducaMadrid. Sigue estos pasos:</p>
+    <ol class="fs-pasos">
+      <li>
+        <div class="fs-txt">Pulsa <strong>Configuración</strong> en el menú de la izquierda.</div>
+        <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFUAAAA/CAYAAACRmoRmAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAH0SURBVHhe7ZhBcoMwDEVJL9R9N101N2hWzemy4whcLt3UDHykGLB/kZn/ZjITy7YcXmQTcnn/+Hx2oiqXr+8fSa3MGwZEOZJKQFIJSCoBSSUgqQQklYCkEpBUApJKQFIJhH/2H/oHhrrr7Y6hUKhSCYSSilWJ7cQ07o05klDbv0RQpCMhTKWWCO0qzK9JGKlnogmp19t9fLVAGKmeMIxjO+HFjyCM1DMhqQQklUAYqd5PIoxjO+HFjyDMj/8aUqLcrMJUaqmQ0vk1CSP1TITZ/h7WsRCpKi1UqQQklUD47d8iqlQCkkpAUglIKgFJJSCpBCSVgKQSkFQC//5EhX+QRP9zZA8LqeyLHvpH9Zws9n7WmVRMkgTvSWxRO19UxjMVK7RzLn7oH7MX9uEY7Hv1PrWnc1+NxRiuP41j3ileH7bXMrtRWRK9yk1xXHj4q3bsn+ax1umM/Jh7Da/WxxiO37smsvnun5OT689Rc35qb81ZKnaz1BaZbm+sUgS/hD2cXipu/1Jha5hJtb45K9YankgvXsoo1VrAEprbPqXk8uf6LbbMwSPCinvvE4u7fxqUBlqHvNdfCubH3Ll+i9wcvOYaR8TiiSoalojohLpR4TbCdiuEq1QU2VqVdhGlnoFQ2/8sSCoBSSUgqQQklYCkEpBUAr/pBDOSTMJWlwAAAABJRU5ErkJggg==" alt="Botón Configuración" width="85" height="63">
+      </li>
+      <li>
+        <div class="fs-txt">Pulsa <strong>Identidades</strong>.</div>
+        <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMUAAAAdCAYAAAAaVaiyAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAHDSURBVHhe7dnLbsIwEIVh0/eJukQqi756N1mwq8QDtZuONDqMseNMEy7/J0UCj+1YjQ8J9PD+8flT/nzPX/YSeFlv2gC8OkIBCEIBCEIBCEIBCEIBiMPoT7LT8aRNwy7nWZuA3XCnAAShAETa45M9Ak3HU/NxqDYWuAcpd4otN/V0PF2FSrXqa22xhrXjMS4lFHoBbdPUjkfziGvGuJRQlM5Pz2dxOc+b3h2xrZTvFH6DTP/8ncLG6jnN5TxfreHW+ayvzmE1T9t1Ht9vyRpK8vgS1NEv7U6xF79BdXNH9Vofq0Vj7HWN9o/m93XfFtVb47WP1n0blksJxSTfF/z76MjmN2y0eaM2rzW+x605/GaN6trWqrfo+bBMSijKTheiN2D/Gcre+WprWDu+uMBoO8akhELDYAGpHVvT82+9Btusa86v69c5rK0WHPRLCcVeF0A3xh5611DrV2tfwv/9o8BgmZRQFHd7969rRzY/ZzS/tun7DK01eFG9NV7bWu8xLi0Ue7FPRQucfkpqPerT49am03Po/PpYE9VLY7yva59WHcuk/J9iLS4g7slwKIBn9fCPT0A2QgEIQgEIQgEIQgGIX1/ebXWKicgRAAAAAElFTkSuQmCC" alt="Opción Identidades" width="197" height="29">
+      </li>
+      <li>
+        <div class="fs-txt">Pulsa <strong>Crear</strong> para hacer una identidad nueva.<br><span class="fs-nota">Si ya tienes una identidad, pulsa sobre ella para editarla.</span></div>
+        <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADEAAAA6CAYAAAAZW7HfAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAFPSURBVGhD7ZdNDoMgEEa1K4/F2oWHddG1B/IO7YpmnHyUEUj5SuYlJsqfPmZEnM/zfE1/yLIsn/PHpeZPcQkWXIIFl2BhCIm55GMX1k0X3eJ47rroNt0/drWToOki0ZrmEsdz/xy/orlED4aQqF6d7qRNaT9E99WpNUNIVKeTRqaJtV0Jnk6MDCHR/J2w4u+EootEbRQ0RenEgKcTIy7Bgkuw4BIsuAQLQ0h83TvpLXfrjVsNcu+UlAjrBv+XWUSyG0AdgQk8fGwT1u3SPl6jMWSdrk+NZwFGQkcBgSKj+8lr3T53nSMbCSuWG8qHk+1RX1RmoUpCotMBpYSsQ/WlNJOIxBmXxwQiUjrriKQEmilUFrE8lKVNCVAC3eybgES202mTOq8Frk4RfSMpFxIrWK6PLJdjpMZLYfrYsdNsiWXBJVhwCRZcggWXYGEIiTds9LXz1NxWiAAAAABJRU5ErkJggg==" alt="Botón Crear" width="49" height="58">
+      </li>
+      <li>
+        <div class="fs-txt">Baja hasta el apartado <strong>Firma</strong> y pulsa el <strong>icono de la imagen</strong>. Aparecerá una barra de herramientas.</div>
+        <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAKsAAABrCAYAAAAIAHKtAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAKtSURBVHhe7du9ThtBGIbRISBxCygUKEpSRSmoUiRXkAvmCqCgokBUSRSliYQoKPhrME6D0WpiwDIG5h2fI63QDoNN8ehjV2tWxuPxuDyDo5+/y6cP7+plmNubegFaJVZiiJUYYiWGWIkhVmKIlRhiJYZYiSFWYoiVGGIlhliJIVZiiJUYYiWGWIkhVmKIlRhiJUYXsX7+8vXuoF8rLf9362PxHe7vlVLtm6zRny4mK8shZrKamHQR67R9911CHO7v/be/Pi9Tfn7a+8+yh8VZ+suAOrhZbtTu2zNtjcWJiXUSyPCY1eH+3t1Rm3V92vtNe91p+1iMmFif2zC4afEO1YHyMmJiHU6xFmKZd8ozv5hYWyLO1yHWJ2hlyi8LsRJDrE/gmvVliXUO/uy/jqafYMGQyUoMsRJDrMQQKzHESgyxEkOsxBArMcRKDLESQ6zEECsxxEoMsRJDrMRo+vOsZxeX5fjktJxfXpVn+jUJ0mysZxeX5defv2Vrc6Osr6+V0ehGsEuu2cuA45PTsrW5UVZXV8r19UiotBvr+eVVWV9fq5dZYs3GOh6Py2h0Uy+zxJqNtdwGCxNNxwpDYiWGWIkhVmKIlRjNPsE6OPpR3m+9rZdnsv3te700t4PdnXqJV2KyEqP7WA92d+4OsnUdq0D70nWsszJ5M3Qd6/BG676brmGkgm1b17GW20hnCfWhNdrQfawTdYT1+dBD3+P1LEWsk/jqr2TpPtY6zPqcHF3HKsy+dB0rffHZgEeYzu3ocrIuKrBFvQ6L0eVkpU9dTlb6JFZiiJUYYiWGWIkhVmKIlRhiJYZYiSFWYjT9uBWGmo51+9PHepkl5jKAGGIlhliJIVZiiJUYYiWGWIkhVmKIlRhiJYZYiSFWYoiVGGIlhliJIVZiiJUYYiXGPxTFK3+g5hRSAAAAAElFTkSuQmCC" alt="Apartado Firma con el icono de imagen" width="171" height="107">
+      </li>
+      <li>
+        <div class="fs-txt">
+          Copia y pega tu firma:
+          <ol type="a">
+            <li>Pulsa este botón para copiar tu firma:<br>
+              <button type="button" id="fs-copiar-firma-2" class="fs-mini">Copiar firma</button>
+              <span class="fs-aviso fs-aviso-linea" id="fs-aviso-2" role="status"></span>
+            </li>
+            <li>Si hay una firma antigua en el cuadro, bórrala.</li>
+            <li>Haz clic dentro del cuadro <strong>Firma</strong> y pega con <strong>Ctrl + V</strong>.</li>
+          </ol>
+        </div>
+      </li>
+      <li>
+        <div class="fs-txt">Pulsa <strong>Guardar</strong> al final de la página. ¡Listo! 🎉</div>
+      </li>
+    </ol>
+
+    <details class="fs-planb">
+      <summary>¿Te da error o la firma no se ve bien? Pégala como código HTML</summary>
+      <p class="fs-intro">Repite los pasos 1 a 4 y después:</p>
+      <ol class="fs-pasos fs-pasos-b">
+        <li>
+          <div class="fs-txt">Borra lo que haya en el cuadro <strong>Firma</strong> y pulsa los <strong>tres puntos (…)</strong> de la barra.</div>
+          <img src="data:image/png;base64,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" alt="Botón de tres puntos" width="239" height="109">
+        </li>
+        <li>
+          <div class="fs-txt">Pulsa el botón <strong>&lt; &gt;</strong> (código fuente).</div>
+          <img src="data:image/png;base64,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" alt="Botón de código fuente" width="158" height="83">
+        </li>
+        <li>
+          <div class="fs-txt">
+            Se abre la ventana <strong>Source Code</strong>:
+            <ol type="a">
+              <li>Pulsa este botón para copiar el código:<br>
+                <button type="button" id="fs-copiar-codigo" class="fs-mini">Copiar código HTML</button>
+                <span class="fs-aviso fs-aviso-linea" id="fs-aviso-3" role="status"></span>
+              </li>
+              <li>Haz clic dentro del cuadro y pega con <strong>Ctrl + V</strong>.</li>
+              <li>Pulsa <strong>Save</strong>.</li>
+            </ol>
+          </div>
+          <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAA6oAAALSCAYAAADUeiwGAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAABwFSURBVHhe7d1PiF3XYcfxM0+WZbeyiRUrllNwKiocC9kQL2KHZKFIyaIQDF5mkZgwzGaKl9llnV02BasCMYhgUkhLFwaT0EVixYtAnSycogg5QUVJICBHQRK2WluWPNPF6I7uO75v5j3N+/N7o88HDtE597w/85zNl3vmzcKJUytrBWCHuXT5Sjmwf1+9DADAHOjVCwAAADBLC+07qkePHe+/CgAAABP25pk3+uafCNUjhw72bQAAAIBJOXfh4idC1dFfAAAAoghVAAAAoghVAAAAoghVAAAAZurS5St9Q6gCAAAwUwf27+sbQhUAAIAoQhUAAIAoQhUAAIAoQhUAAIAoQhUAAIAoQhUAAIAoQhUAAIAoQhUAAIAoQhUAAIAoQhUAAIAoQhUAAICZunT5St8QqgAAAMzUQ3v/pm8IVQAAAKIIVQAAAKIIVQAAAKIIVQAAAKIIVQAAAKIsnDi1stZMjh47Xo4cOti/Y5ueef4r9VI5+9Yv66Udb1qfQ/t1JvH8AAAA43TuwsXy05/+tG9tYndUn3n+K51xVgZE20426OcdtA4AAHAvm0io1gF29q1fboxBe3aq+g7nvfo5AAAADGsiodp2Lx8/rSO1TawCAAB0W3j6uS+vlVLK8tLi2H5HdbNA20xXsNWPH/TcXetdz1c2eVyjfs3Ssa9rT63rPbUNul6/Vhnw+NLxHPW8rX7e+joAAHBva5phs1YYZs8oOn9HdXlpsSwvLZaTK6f7LmzHVtHVZdC+QevjMOi56/V63qx1rY/i7AhHgbvW67V63tZ1bRw/AwAAsDO022BQJwyzZxwmdvS3jq/Noqi9Pkq8jaJ+3q7X7NK1b9De7drqtQb9n6Jrb9soewEAAEpHh9XzSdoI1eWlxf4rY9AVQ5sF6yy032PX+20Mupb0s2xlJ/wMAADAZHT1QtMKXc3QtX9cJnZHtTHoDt4wP2g9n4au91pagT2N0K5fv563bXatNs2fAQAAmD9dfdHVDl37xmniodo26R9m3ohGAAAgzVbdttX1cZhIqN5tgNX76/k0DHrf7TvD9Ri3+vXredtm12r1+57kzwAAAMyvQY0waH3cJhKq82TY0Ova17XW1v6PWO9tz6f1H7t+D4PWAACAe9ugThi0Pm4LJ06trJVSysmV0+XH//qjsfwd1TLED1DH2Wb7R9lbWvu3isHNnmezyGzret7aKI8f194y5p8BAAC4N2zWDo1xNkTn31Htm43R2U2OlHatd62VAev1Wj0f1qDH1ev1vDFovTZoX9d611oZsN61NsigvYPWAQCAe09XpHY1Q9e+cVp4+rkvr5Xbf57m6LHjY7ujCgAAwPzois92pG51/W513lFdXlqcyN9QBQAAYH7VEVrPJ2liR38BAACYH+0QHRSlg9bHTagCAABQyu0Q3SpGmz1b7dsOoQoAAEAUoQoAAEAUoQoAAEAUoQoAAEAUoQoAAEAUoQoAAEAUoQoAAEAUoQoAAEAUoQoAAEAUoQoAAEAUoQoAAEAUoQoAAMBMvX/9//qGUAUAAGCmDuzf1zeEKgAAAFGEKgAAAFGEKgAAAFGEKgAAAFGEKgAAAFGEKgAAAFGEKgAAAFGEKgAAAFGEKgAAAFEWTpxaWWsmR48dLw/2NqYAAAAwUR+sLpQ3z7zRt/aJUD1y6GDfBgAAAJiUcxculn/79//oW3P0FwAAgJk6sH9f3xCqAAAARBGqAAAARBGqAAAARBGqAAAARBGqAAAARBGqAAAARBGqAAAARBGqAAAARBGqAAAAROmdXDldTq6crtcBAABgJnrLS4tleWlRrAIAABBh4cSplbVmcvTY8XLk0MH+HWPw8VopGy8CAADA3FkopexaqFe379yFi+XNM2/0rU0sVK/fKuXyjVLeu7UeqgAAAMy3XQulPHxfKfv3lLL3vvrq3ekK1Yl8mdKfPyjl99dLuXpTpAIAAOwUH6+td97vr69336SMPVT//EEp796oVwEAANhJ3r0xuVgd69Hf67fWy7rxu/dL+dlfSnnnfXdWAQAA5tmuhVKeeqiUr3+mlM8/dGf9yb3bOwbcdfR3rKF68X/XbwOX25H6L/9TyvcOl/K1/aXsHvu9WwAAAKbl5mopP79cyvfPl/JP/3AnVh/ZXcrBv613D68rVMeaj+/duvPvn/1lPVL/8TGRCgAAMO9299b77nuH13uv0e7AcdlIyO3+HdWP1/qP977z/vqdVAAAAHaOr+1f771G3YLj0Du5crqcXDldlpcW62sjqd/Xx2vupAIAAOw0u3ufDNO6B7ert7y0uO1IBQAAgHFxzxMAAIAoQhUAAIAoQhUAAIAoQhUAAIAoQhUAAIAoQhUAAIAoQhUAAIAoQhUAAIAoQhUAAIAoQhUAAIAoQhUAAIAoQhUAAIAoQhUAAICZunT5St8QqgAAAMzUgf37+oZQBQAAIIpQBQAAIIpQBQAAIIpQBQAAIIpQBQAAIIpQBQAAIIpQBQAAIIpQBQAAIIpQBQAAIIpQBQAAIIpQBQAAIIpQBQAAYKYuXb7SN4QqAAAAM3Vg/76+IVQBAACIIlQBAACIIlQBAACIIlQBAACIIlQBAACIIlQBAACIIlQBAACIIlQBAACIIlQBAACI0ju5crqcXDldrwMAAMBM9JaXFsvy0qJYBQAAIIKjvwAAAETZCNXlpcX+KwAAADAD7qgCAAAQRagCAAAQRagCAAAQRagCAAAQZSNU/XkaAAAAErijCgAAQJTeyZXT5eTKaX+eBgAAgAi95aVFkQoAAEAMR38BAACIIlQBAACIIlQBAACIIlQBAACIIlQBAACIIlQBAACIIlQBAACIIlQBAACIIlQBAACIIlQBAACIIlQBAACIIlQBAACIIlQBAACYqUuXr/QNoQoAAMBMHdi/r28IVQAAAKIIVQAAAKIIVQAAAKIIVQAAAKIIVQAAAKIIVQAAAKIIVQAAAKIIVQAAAKIIVQAAAKIIVQAAAKIIVQAAAKIIVQAAAKIIVQAAAKIIVQAAAKIIVQAAAKIIVQAAAKIIVQAAAKIIVQAAAKIIVQAAAKIIVQAAAKIIVQAAAKIIVQAAAKL0Tq6cLs0AAACAWestLy2WZgAAAMCsOfoLAABAFKEKAABAFKEKAABAlI0vUwIAAIAEG1+mBAAAAAkc/QUAACCKUAUAACCKUAUAACDKxpcp+UIlAAAAEmx8mZIvVAIAACCBo78AAABEEaoAAABEEaoAAABEEaoAAABEEaoAAABEEaoAAABEEaoAAABEEaoAAABEEaoAAABEEaoAAABEEaoAAABEEaoAAABEEaoAAABEEaoAAABEEaoAAABEEaoAAABEEaoAAABEEaoAAABEEaoAAABEEaoAAABEEaoAAABEEaoAAABEEaoAAABEEaoAAABEEaoAAABEEaoAAABEEaoAAABEEaoAAABEEaoAAABEEaoAAABEEaoAAABEEaoAAABEEaoAAABEEaoAAABEEaoAAABEEaoAAABEEaoAAABEEaoAAABEEaoAAABEEaoAAABEEaoAAABE6Z1cOV2aAQAAALPmjioAAABRestLi6UZAAAAMGvuqAIAABBFqAIAABDFlykBAAAQxR1VAAAAovgyJQAAAKK4owoAAEAUoQoAAEAUoQoAAEAUoQoAAEAUoQoAAEAUoQoAAEAUoQoAAEAUoQoAAEAUoQoAAEAUoQoAAEAUoQoAAEAUoQoAAEAUoQoAAEAUoQoAAEAUoQoAAEAUoQoAAEAUoQoAAECU3moppRkAAAAwbe0uXS2l9N79sJRmAAAAwLS1u/TdDx39BQAAIIxQBQAAIErvJ5dKaQYAAABMW7tLf3KplN63P3uzNAMAAACmrd2l3/7sTUd/AQAAyCJUAQAAiCJUAQAAiCJUAQAAiCJUAQAAiCJUAQAAiCJUAQAAiCJUAQAAiCJUAQAAiCJUAQAAiCJUAQAAiCJUAQAAiCJUAQAAiCJUAQAAiCJUAQAAiCJUAQAAiCJUAQAAiCJUAQAAiCJUAQAAiCJUAQAAiCJUAQAAiCJUAQAAiCJUAQAAiCJUAQAAiCJUAQAAiCJUAQAAiCJUAQAAiCJUAQAAiCJUAQAAiCJUAQAAiCJUAQAAiCJUAQAAiCJUAQAAiNJbXV0tzQAAAIBpa3fp6upq6V27eqU0AwAAAKat3aXXrl4pvX2ffrQ0AwAAAKat3aX7Pv2o31EFAAAgi1AFAAAgilAFAAAgilAFAAAgilAFAAAgilAFAAAgilAFAAAgilAFAAAgilAFAAAgilAFAAAgilAFAAAgilAFAAAgilAFAAAgilAFAAAgilAFAAAgilAFAAAgilAFAAAgilAFAAAgilAFAAAgilAFAAAgilAFAAAgilAFAAAgilAFAAAgilAFAAAgilAFAAAgilAFAAAgilAFAAAgilAFAAAgilAFAAAgilAFAAAgilAFAAAgilAFAAAgilAFAAAgSm91dbU0AwAAAKat3aWrq6uld+3qldIMAAAAmLZ2l167eqX0Hn/88dIMAAAAmLZ2lz7++ON+RxUAAIAsQhUAAIAoQhUAAIAoQhUAAIAoQhUAAIAoQhUAAIAoQhUAAIAoQhUAAIAoQhUAAIAoQhUAAIAoQhUAAIAoQhUAAIAoQhUAAIAoQhUAAIAoQhUAAIAoQhUAAIAoQhUAAIAoQhUAAIAoQhUAAIAoQhUAAIAoQhUAAIAoQhUAAIAoQhUAAIAoQhUAAIAoQhUAAIAoQhUAAIAoQhUAAIAoQhUAAIAoQhUAAIAoQhUAAIAoQhUAAIAoQhUAAIAoQhUAAIAoQhUAAIAoQhUAAIAoQhUAAIAoQhUAAIAoQhUAAIAoQhUAAIAoQhUAAIAoQhUAAIAoQhUAAIAoQhUAAIAoQhUAAIAoQhUAAIAoQhUAAIAoQhUAAIAoQhUAAIAoQhUAAIAoQhUAAIAoQhUAAIAoQhUAAIAoQhUAAIAoQhUAAIAoQhUAAIAoQhUAAIAoQhUAAIAoQhUAAIAoQhUAAIAoQhUAAIAoQhUAAIAoQhUAAIAoQhUAAIAoQhUAAIAoQhUAAIAoQhUAAIAoQhUAAIAoQhUAAIAoQhUAAIAoQhUAAIAoQhUAAIAoQhUAAIAoQhUAAIAoQhUAAIAoQhUAAIAoQhUAAIAoQhUAAIAoQhUAAIAoQhUAAIAoQhUAAIAoQhUAAIAoQhUAAIAoQhUAAIAoQhUAAIAoQhUAAIAoQhUAAIAoQhUAAIAoQhUAAIAoQhUAAIAoQhUAAIAoQhUAAIAoQhUAAIAoQhUAAIAoQhUAAIAoQhUAAIAoQhUAAIAoQhUAAIAovZU/lNIMAAAAmLZ2l678oZTeNw6U0gwAAACYtnaXfuOAo78AAACEEaoAAABE6T32QCnNAAAAgGlrd+ljD5TS692+rerWKgAAALPQ7lJ9CgAAQByhCgAAQBShCgAAQBShCgAAQBShCgAAQBShCgAAQBShCgAAQBShCgAAQBShCgAAQBShCgAAQBShCgAAQBShCgAAQBShCgAAQBShCgAAQBShCgAAQBShCgAAQBShCgAAQBShCgAAQBShCgAAQBShCgAAQBShCgAAQBShCgAAQBShCgAAQBShCgAAQBShCgAAQBShCgAAQBShCgAAQBShCgAAQBShCgAAQJTeyh9KaQYAAADMmjuqAAAARBGqAAAARBGqAAAARBGqAAAARBGqAAAARBGqAAAARBGqAAAARBGqAAAARBGqAAAARBGqAAAARBGqAAAARBGqAAAARBGqAAAARBGqAAAARBGqAAAARBGqAAAARBGqAAAARBGqAAAARBGqAAAARBGqAAAARBGqAAAARBGqAAAARBGqAAAARBGqAAAARBGqAAAARBGqAAAARBGqAAAARBGqAAAARBGqAAAARBGqAAAARBGqAAAARBGqAAAARBGqAAAARBGqAAAAROkt/X0pzQAAAIBZc0cVAACAKEIVAACAKEIVAACAKEIVAACAKEIVAACAKEIVAACAKEIVAACAKEIVAACAKEIVAACAKEIVAACAKEIVAACAKEIVAACAKEIVAACAKEIVAACAKEIVAACAKEIVAACAKEIVAACAKEIVAACAKEIVAACAKEIVAACAKEIVAACAKEIVAACAKEIVAACAKEIVAACAKEIVAACAKEIVAACAKEIVAACAKEIVAACAKEIVAACAKEIVAACAKEIVAACAKEIVAACAKEIVAACAKEIVAACAKEIVAACAKEIVAACAKEIVAACAKEIVAACAKEIVAACAKEIVAACAKEIVAACAKEIVAACAKEIVAACAKEIVAACAKEIVAACAKEIVAACAKEIVAACAKEIVAACAKEIVAACAKEIVAACAKEIVAACAKEIVAACAKEIVAACAKEIVAACAKEIVAACAKEIVAACAKEIVAACAKEIVAACAKEIVAACAKEIVAACAKEIVAACAKEIVAACAKEIVAACAKEIVAACAKEIVAACAKEIVAACAKEIVAACAKEIVAACAKEIVAACAKEIVAACAKEIVAACAKEIVAACAKEIVAACAKEIVAACAKEIVAACAKEIVAACAKEIVAACAKEIVAACAKEIVAACAKEIVAACAKEIVAACAKEIVAACAKEIVAACAKEIVAACAKEIVAACAKEIVAACAKEIVAACAKEIVAACAKEIVAACAKEIVAACAKEIVAACAKEIVAACAKEIVAACAKEIVAACAKEIVAACAKEIVAACAKEIVAACAKEIVAACAKEIVAACAKEIVAACAKEIVAACAKEIVAACAKEIVAACAKEIVAACAKEIVAACAKEIVAACAKEIVAACAKEIVAACAKEIVAACAKEIVAACAKEIVAACAKEIVAACAKEIVAACAKEIVAACAKEIVAACAKEIVAACAKEIVAACAKEIVAACAKEIVAACAKEIVAACAKEIVAACAKEIVAACAKEIVAACAKEIVAACAKGML1YVqvmuhlJur1SIAAABz7ebqeu+11T24XWML1V0L/W/2qYdK+fnl9g4AAADm3c8vr/deo27BcRhbqJZSysP33fn31z9TyvfPl/Kf77qzCgAAMO9urq733ffPr/deo92B47Jw4tTKWjM5eux4OXLo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" alt="Ventana Source Code con el botón Save" width="938" height="722" class="fs-grande">
+        </li>
+        <li>
+          <div class="fs-txt">Pulsa <strong>Guardar</strong> al final de la página. ¡Listo! 🎉</div>
+        </li>
+      </ol>
+      <textarea id="fs-codigo" readonly aria-label="Código HTML de la firma"></textarea>
+    </details>
+  </div>
+
+<script>
+(function () {
+  var BASE = "https://site.educa.madrid.org/cp.seneca.madrid//wp-content/uploads/cp.seneca.madrid/2026/09/";
+  var WEB = "https://site.educa.madrid.org/cp.seneca.madrid/";
+  var CENTRO = {
+    nombre: "CEIPSO FILÓSOFO SÉNECA",
+    direccion: "C/ Santa Adela, 23",
+    cp: "28033 Madrid",
+    telefono: "917638145"
+  };
+
+  var $ = function (id) { return document.getElementById(id); };
+  var inNombre = $("fs-nombre"), inCargo = $("fs-cargo"), inEmail = $("fs-email");
+
+  function esc(s) {
+    return String(s).replace(/[&<>"']/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+    });
+  }
+
+  function emailValido(e) { return /^[^\s@<>"']+@[^\s@<>"']+\.[^\s@<>"']+$/.test(e); }
+
+  function generar(nombre, cargo, email) {
+    var f = "font-family:Verdana,Geneva,sans-serif;";
+    var t = f + "font-size:10pt;color:#000000;line-height:1.3;";
+    var h = "";
+    // Recuadro blanco: mantiene la firma legible si el correo se ve con fondo oscuro
+    h += '<table cellpadding="0" cellspacing="0" border="0" bgcolor="#ffffff" style="border-collapse:collapse;background-color:#ffffff;border-radius:6px;"><tr><td bgcolor="#ffffff" style="background-color:#ffffff;padding:14px 16px;border-radius:6px;">';
+    h += '<table cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;' + f + '">';
+    h += '<tr><td style="' + t + 'padding:0 0 12px 0;">';
+    h += '<i style="font-size:13pt;font-style:italic;">' + esc(nombre) + '</i><br>';
+    if (cargo) h += '<b style="font-size:11pt;font-weight:bold;"><i style="font-style:italic;">' + esc(cargo) + '</i></b><br>';
+    h += esc(CENTRO.nombre) + '<br>';
+    h += esc(CENTRO.direccion) + '<br>';
+    h += esc(CENTRO.cp) + '<br>';
+    h += esc(CENTRO.telefono) + '<br>';
+    h += '<a href="mailto:' + esc(email) + '" style="color:#0000EE;font-weight:bold;text-decoration:underline;"><b>' + esc(email) + '</b></a><br><br>';
+    h += '<a href="' + WEB + '" style="color:#0000EE;text-decoration:underline;">WEB DEL CENTRO</a>';
+    h += '</td></tr>';
+    h += '<tr><td style="padding:0 0 12px 0;">';
+    h += '<table cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;"><tr>';
+    h += '<td valign="bottom" style="padding:0 30px 0 0;"><img src="' + BASE + 'LOGO-CEIPSO-FILOSOFO-SENECA_desde-VECTOR.png" width="100" height="135" alt="CEIPSO Filósofo Séneca" style="display:block;border:0;"></td>';
+    h += '<td valign="bottom" style="padding:0 20px 0 0;"><img src="' + BASE + 'CONSEJERIA.jpg" width="160" height="72" alt="Comunidad de Madrid - Consejería de Educación" style="display:block;border:0;"></td>';
+    h += '<td valign="bottom"><img src="' + BASE + 'PROA.png" width="240" height="73" alt="PROA+" style="display:block;border:0;"></td>';
+    h += '</tr></table>';
+    h += '</td></tr>';
+    h += '<tr><td style="padding:0 0 10px 0;"><img src="' + BASE + 'BANER.png" width="580" height="46" alt="Cofinanciado por la Unión Europea" style="display:block;border:0;"></td></tr>';
+    h += '<tr><td><img src="' + BASE + 'frase.png" width="580" height="23" alt="Programa cofinanciado por el Ministerio de Educación, Formación Profesional y Deportes y el Fondo Social Europeo Plus (FSE+)" style="display:block;border:0;"></td></tr>';
+    h += '</table>';
+    h += '</td></tr></table>';
+    return h;
+  }
+
+  var htmlActual = "";
+
+  function actualizar() {
+    var nombre = inNombre.value.trim();
+    var cargo = inCargo.value.trim();
+    var email = inEmail.value.trim();
+    var ok = nombre && email && emailValido(email);
+
+    var err = email && !emailValido(email) ? "El correo electrónico no parece válido." : "";
+    $("fs-email-error").textContent = err;
+    inEmail.classList.toggle("fs-error", !!err);
+
+    htmlActual = generar(nombre || "Nombre y apellidos", cargo, email || "correo@educa.madrid.org");
+    $("fs-preview").innerHTML = htmlActual;
+    $("fs-codigo").value = ok ? htmlActual : "";
+    $("fs-codigo").placeholder = "Escribe tu nombre y un correo válido para obtener el código.";
+    ["fs-copiar-firma", "fs-copiar-firma-2", "fs-copiar-codigo"].forEach(function (id) { $(id).disabled = !ok; });
+    if (!ok) aviso("");
+  }
+
+  var tAviso;
+  function aviso(txt, id) {
+    ["fs-aviso", "fs-aviso-2", "fs-aviso-3"].forEach(function (i) { $(i).textContent = ""; });
+    clearTimeout(tAviso);
+    if (!txt) return;
+    var el = $(id || "fs-aviso");
+    el.textContent = txt;
+    tAviso = setTimeout(function () { el.textContent = ""; }, 4000);
+  }
+
+  function copiarSeleccionando(nodo) {
+    var sel = window.getSelection(), r = document.createRange();
+    r.selectNodeContents(nodo);
+    sel.removeAllRanges(); sel.addRange(r);
+    var ok = false;
+    try { ok = document.execCommand("copy"); } catch (e) {}
+    sel.removeAllRanges();
+    return ok;
+  }
+
+  function copiarFirma(idAviso) {
+    var fin = function (ok) {
+      aviso(ok ? "✔ Firma copiada. Pégala en el cuadro Firma de tu correo."
+               : "No se pudo copiar automáticamente. Selecciona la vista previa y pulsa Ctrl + C.", idAviso);
+    };
+    if (navigator.clipboard && window.ClipboardItem) {
+      var item = new ClipboardItem({
+        "text/html": new Blob([htmlActual], { type: "text/html" }),
+        "text/plain": new Blob([$("fs-preview").innerText], { type: "text/plain" })
+      });
+      navigator.clipboard.write([item]).then(function () { fin(true); },
+        function () { fin(copiarSeleccionando($("fs-preview"))); });
+    } else {
+      fin(copiarSeleccionando($("fs-preview")));
+    }
+  }
+  $("fs-copiar-firma").addEventListener("click", function () { copiarFirma("fs-aviso"); });
+  $("fs-copiar-firma-2").addEventListener("click", function () { copiarFirma("fs-aviso-2"); });
+
+  function copiarCodigo(idAviso) {
+    var ta = $("fs-codigo");
+    var fin = function () { aviso("✔ Código HTML copiado.", idAviso); };
+    var viejo = function () { ta.select(); document.execCommand("copy"); window.getSelection().removeAllRanges(); fin(); };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(ta.value).then(fin, viejo);
+    } else { viejo(); }
+  }
+  $("fs-copiar-codigo").addEventListener("click", function () { copiarCodigo("fs-aviso-3"); });
+
+
+  [inNombre, inCargo, inEmail].forEach(function (el) { el.addEventListener("input", actualizar); });
+  actualizar();
+})();
+</script>
+</div>
+<!-- ============ FIN GENERADOR DE FIRMAS ============ -->
+
+</body>
+</html>
